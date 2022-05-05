@@ -1,0 +1,90 @@
+Variante de verificare a modulului:
+
+1)
+
+#include <SoftwareSerial.h>
+
+SoftwareSerial BTSerial(0, 1);   // RX | TX
+
+void setup() {
+  pinMode(9, OUTPUT);    /* this pin will pull the HC-05 pin 34 (KEY pin) HIGH to switch module to AT mode */
+  digitalWrite(9, HIGH); 
+  
+  Serial.begin(38400);
+  Serial.println("Enter AT Commands:");
+  BTSerial.begin(38400);  // HC-05 default speed in AT command mode
+}
+
+void loop() {
+
+//The code below allows for commands and messages to be sent from COMPUTER (serial monitor) -> HC-05
+  if (Serial.available())           // Keep reading from Arduino Serial Monitor 
+    BTSerial.write(Serial.read());  // and send to HC-05
+
+//The code below allows for commands and messages to be sent from HC-05 -> COMPUTER (serial monitor)    
+  if (BTSerial.available())         // Keep reading from HC-05 and send to Arduino 
+    Serial.write(BTSerial.read());  // Serial Monitor
+}
+
+2)
+
+#include <SoftwareSerial.h>
+
+SoftwareSerial Bluetooth(5, 6);   // RX | TX
+
+  char c=' ';
+void setup() {
+
+  
+  Serial.begin(9600);
+  Serial.println("Ready");
+  Bluetooth.begin(38400);  // HC-05 default speed in AT command mode
+}
+
+void loop() {
+
+//The code below allows for commands and messages to be sent from COMPUTER (serial monitor) -> HC-05
+  if (Bluetooth.available())
+  {
+   c=Bluetooth.read();
+   Serial.write(c);
+  }
+    
+
+//The code below allows for commands and messages to be sent from HC-05 -> COMPUTER (serial monitor)    
+  if (Serial.available())         // Keep reading from HC-05 and send to Arduino 
+    {
+     c=Serial.read();
+     Bluetooth.write(c);
+    }
+}
+
+3) Acesta a functionat pentru mine:
+
+/* 
+ *  Bluetooh Basic: LED ON OFF - Avishkar
+ *  Coder - Mayoogh Girish
+ *  Website - http://bit.do/Avishkar
+ *  Download the App : 
+ *  This program lets you to control a LED on pin 13 of arduino using a bluetooth module
+ */
+char Incoming_value = 0;                //Variable for storing Incoming_value
+void setup() 
+{
+  Serial.begin(9600);         //Sets the data rate in bits per second (baud) for serial data transmission
+  pinMode(13, OUTPUT);        //Sets digital pin 13 as output pin
+}
+void loop()
+{
+  if(Serial.available() > 0)  
+  {
+    Incoming_value = Serial.read();      //Read the incoming data and store it into variable Incoming_value
+    Serial.print(Incoming_value);        //Print Value of Incoming_value in Serial monitor
+    Serial.print("\n");        //New line 
+    if(Incoming_value == '1')            //Checks whether value of Incoming_value is equal to 1 
+      digitalWrite(13, HIGH);  //If value is 1 then LED turns ON
+    else if(Incoming_value == '0')       //Checks whether value of Incoming_value is equal to 0
+      digitalWrite(13, LOW);   //If value is 0 then LED turns OFF
+  }                            
+ 
+}                 
